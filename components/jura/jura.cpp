@@ -76,7 +76,7 @@ namespace esphome
       return false;
     }
 
-    void JuraComponent::decodeResponse()
+    void JuraComponent::decode_response()
     {
       int s = 0;
       uint8_t inbyte = 0;
