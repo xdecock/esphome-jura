@@ -15,22 +15,24 @@ namespace esphome
     enum JuraReadStates
     {
       COMMAND = 0,
-      READ_TYPE,
-      READ_EEPROM_0000,
-      READ_EEPROM_0010,
-      READ_EEPROM_0020,
-      READ_EEPROM_00E0,
-      READ_STATE,
+      READ_TYPE = 1,
+      READ_EEPROM_0000 = 2,
+      READ_EEPROM_0010 = 3,
+      READ_EEPROM_0020 = 4,
+      READ_EEPROM_00E0 = 5,
+      READ_STATE = 6,
     };
 
     void JuraComponent::loop()
     {
       const uint32_t now = millis();
-      if (now - this->last_transmission_ >= 500)
+      if (now - this->last_transmission_ >= 5000)
       {
+        if (this->data_index_>0) {
+          ESP_LOGD("read_loop", "reset, too slow");
+        }
         // last transmission too long ago. Reset RX index.
         this->data_index_ = 0;
-        this->parse_mode = COMMAND;
       }
 
       if (this->available() == 0)
@@ -40,12 +42,13 @@ namespace esphome
       while (this->available() != 0)
       {
         this->read_byte(&this->data_[this->data_index_]);
-        auto check = this->check_response_();
-        if (check)
+        if (this->check_response_())
         {
           // finished
           this->parse_data_();
           this->data_index_ = 0;
+          this->decoded_index_ = 0;
+          this->decoded_data_[0] = '\0';
           this->last_update_ = now;
         }
         else
@@ -60,27 +63,28 @@ namespace esphome
 
     bool JuraComponent::check_response_()
     {
-      uint8_t index = this->data_index_;
-      uint8_t byte = this->data_[index];
-
-      if (index < 3)
-      {
+      this->decode_response();
+      if (this->decoded_index_ < 3) {
         return false;
       }
-
-      if (this->data_[index] == '\n' && this->data_[index - 1] == '\r')
-      {
+      if (
+        this->decoded_data_[this->decoded_index_-1] == 13
+      ) {
         return true;
-      }
+      } 
       return false;
     }
 
     void JuraComponent::decode_response()
     {
+      if (this->data_index_ == 0) {
+        // Keep the existing payload
+        return;
+      }
       int s = 0;
       uint8_t inbyte = 0;
       this->decoded_index_ = 0;
-      for (int i = 0; i < this->data_index_ - 2; i++) // Read the reply skip the termination
+      for (int i = 0; i < this->data_index_ ; i++) // Read the reply skip the termination
       {
         uint8_t rawbyte = this->data_[i];
         bitWrite(inbyte, s + 0, bitRead(rawbyte, 2));
@@ -89,14 +93,17 @@ namespace esphome
         {
           s = 0;
           this->decoded_data_[this->decoded_index_] = inbyte;
+          this->decoded_index_++;
         }
       }
+      this->decoded_data_[this->decoded_index_+1] = '\0';
     }
 
     uint16_t JuraComponent::get_16bit_uint(uint8_t position)
     {
-      std::string decoded_string = reinterpret_cast<char *>(this->decoded_data_);
-      return strtol(decoded_string.substr(position, position + 4).c_str(), NULL, 16);
+      std::string decoded_string(reinterpret_cast<char *>(this->decoded_data_));
+      long value = strtol(decoded_string.substr(position, 4).c_str(), NULL, 16);
+      return value;
     }
 
     void JuraComponent::dump_config()
@@ -150,7 +157,6 @@ namespace esphome
 
     void JuraComponent::parse_data_()
     {
-      this->decode_response();
       switch (this->parse_mode)
       {
       case COMMAND:
@@ -205,14 +211,14 @@ namespace esphome
         return;
 
       case READ_EEPROM_0020:
-        uint16_t counter_cappuccino_cleaning, counter_filters;
+        uint16_t counter_cappuccino_cleaning, counter_filter;
         counter_cappuccino_cleaning = this->get_16bit_uint(7);
-        counter_filters = this->get_16bit_uint(11);
-        if (sensor_cappuccino_cleaning != nullptr) {
-          sensor_cappuccino_cleaning->publish_state(counter_cappuccino_cleaning);
+        counter_filter = this->get_16bit_uint(11);
+        if (sensor_cappucino_cleaning != nullptr) {
+          sensor_cappucino_cleaning->publish_state(counter_cappuccino_cleaning);
         }
-        if (sensor_filters != nullptr) {
-          sensor_filters->publish_state(counter_filters);
+        if (sensor_filter != nullptr) {
+          sensor_filter->publish_state(counter_filter);
         }
         return;
 
@@ -221,11 +227,11 @@ namespace esphome
         counter_double_espressi = this->get_16bit_uint(3);
         counter_double_ristretti = this->get_16bit_uint(7);
         counter_double_big_coffee = this->get_16bit_uint(11);
-        if (sensor_double_espressi != nullptr) {
-          sensor_double_espressi->publish_state(counter_double_espressi);
+        if (sensor_espressi != nullptr) {
+          sensor_espressi->publish_state(counter_double_espressi);
         }
-        if (sensor_cappuccino_cleaning != nullptr) {
-          sensor_double_ristretti->publish_state(counter_double_ristretti);
+        if (sensor_ristretti != nullptr) {
+          sensor_ristretti->publish_state(counter_double_ristretti);
         }
         if (sensor_double_big_coffee != nullptr) {
           sensor_double_big_coffee->publish_state(counter_double_big_coffee);
@@ -241,7 +247,7 @@ namespace esphome
 
     void JuraComponent::setup()
     {
-      this->set_update_interval(15000);
+      this->set_update_interval(60000);
       register_service(&JuraComponent::on_turnoff, "turnoff");
       register_service(&JuraComponent::on_press_ristreto, "press_ristreto");
       register_service(&JuraComponent::on_press_espresso, "press_espresso");

@@ -56,10 +56,10 @@ namespace esphome
         bool check_response_();
         void decode_response();
 
-        uint8_t data_[256];
-        uint8_t data_index_{0};
-        uint8_t decoded_data_[64];
-        uint8_t decoded_index_;
+        uint8_t data_[1024];
+        uint16_t data_index_{0};
+        uint8_t decoded_data_[256];
+        uint16_t decoded_index_;
         uint32_t last_update_{0};
         uint32_t last_transmission_{0};
         uint32_t update_interval_{0};
