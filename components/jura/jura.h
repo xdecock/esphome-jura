@@ -37,16 +37,15 @@ namespace esphome
         void set_water_tank_sensor(sensor::Sensor *water_tank_sensor);
         void set_coffee_ground_sensor(sensor::Sensor *coffee_ground_sensor);
 
-        void JuraComponent::on_turnoff();
-        void JuraComponent::on_press_ristreto();
-        void JuraComponent::on_press_espresso();
-        void JuraComponent::on_press_coffee();
-        void JuraComponent::on_press_cappuccino();
-        void JuraComponent::on_press_latte();
-        void JuraComponent::on_press_hotwater();
-        void JuraComponent::on_press_milk();
-        void JuraComponent::on_press_flush();
-        ;
+        void on_turnoff();
+        void on_press_ristreto();
+        void on_press_espresso();
+        void on_press_coffee();
+        void on_press_cappuccino();
+        void on_press_latte();
+        void on_press_hotwater();
+        void on_press_milk();
+        void on_press_flush();
 
       protected:
         void parse_data_();
