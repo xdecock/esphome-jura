@@ -10,11 +10,11 @@ namespace jura {
 
 class JuraComponent : public PollingComponent, public uart::UARTDevice, public Component, public CustomAPIDevice {
   public:
-    PMSX003Component() = default;
+    JuraComponent() = default;
     void loop() override;
     float get_setup_priority() const override;
     void dump_config() override;
-    void setup override();
+    void setup() override;
 
     void set_ristretto_sensor(sensor::Sensor *ristretto_sensor);
     void set_ristretti_sensor(sensor::Sensor *ristretti_sensor);
@@ -44,7 +44,7 @@ class JuraComponent : public PollingComponent, public uart::UARTDevice, public C
     uint8_t data_[256];
     uint8_t data_index_{0};
     uint8_t decoded_data_[64];
-    uint8_t this->decoded_index_;
+    uint8_t decoded_index_;
     uint32_t last_update_{0};
     uint32_t last_transmission_{0};
     uint32_t update_interval_{0};
@@ -70,11 +70,11 @@ class JuraComponent : public PollingComponent, public uart::UARTDevice, public C
     sensor::Sensor *sensor_cappucino_cleaning{nullptr};
     sensor::Sensor *sensor_filter{nullptr};
 
-    sensor::BinarySensor *status_power{nullptr};
-    sensor::BinarySensor *status_rinsing{nullptr};
-    sensor::BinarySensor *error_tray{nullptr};
-    sensor::BinarySensor *error_tank{nullptr};
-    sensor::BinarySensor *error_grounds{nullptr};
+    sensor::Sensor *status_power{nullptr};
+    sensor::Sensor *status_rinsing{nullptr};
+    sensor::Sensor *error_tray{nullptr};
+    sensor::Sensor *error_tank{nullptr};
+    sensor::Sensor *error_grounds{nullptr};
 };
 }
 }

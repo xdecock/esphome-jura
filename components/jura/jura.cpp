@@ -24,6 +24,7 @@ namespace esphome
 
         void JuraComponent::loop()
         {
+            const uint32_t now = millis();
             if (now - this->last_transmission_ >= 500)
             {
                 // last transmission too long ago. Reset RX index.
