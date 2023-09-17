@@ -100,22 +100,22 @@ namespace esphome
         void JuraComponent::dump_config()
         {
             ESP_LOGCONFIG(TAG, "Jura Component:");
-            LOG_SENSOR("  ", "Counter - Espresso", this->counter_espresso);
-            LOG_SENSOR("  ", "Counter - Espressi", this->counter_double_espressi);
-            LOG_SENSOR("  ", "Counter - Ristretto", this->counter_ristretto);
-            LOG_SENSOR("  ", "Counter - Ristretti", this->counter_double_ristretti);
-            LOG_SENSOR("  ", "Counter - Coffee", this->counter_big_coffee);
-            LOG_SENSOR("  ", "Counter - Coffees", this->counter_double_big_coffee);
-            LOG_SENSOR("  ", "Counter - Coffee Powder", this->counter_powder_coffee);
+            LOG_SENSOR("  ", "Counter - Espresso", this->sensor_espresso);
+            LOG_SENSOR("  ", "Counter - Espressi", this->sensor_double_espressi);
+            LOG_SENSOR("  ", "Counter - Ristretto", this->sensor_ristretto);
+            LOG_SENSOR("  ", "Counter - Ristretti", this->sensor_double_ristretti);
+            LOG_SENSOR("  ", "Counter - Coffee", this->sensor_big_coffee);
+            LOG_SENSOR("  ", "Counter - Coffees", this->sensor_double_big_coffee);
+            LOG_SENSOR("  ", "Counter - Coffee Powder", this->sensor_powder_coffee);
 
-            LOG_SENSOR("  ", "Counter - Cappuccino", this->counter_cappuccino);
-            LOG_SENSOR("  ", "Counter - Latte Machiatto", this->counter_latte_machiato);
-            LOG_SENSOR("  ", "Counter - Milk", this->counter_milk);
-            LOG_SENSOR("  ", "Counter - Water", this->counter_water);
+            LOG_SENSOR("  ", "Counter - Cappuccino", this->sensor_cappuccino);
+            LOG_SENSOR("  ", "Counter - Latte Machiatto", this->sensor_latte_machiato);
+            LOG_SENSOR("  ", "Counter - Milk", this->sensor_milk);
+            LOG_SENSOR("  ", "Counter - Water", this->sensor_water);
 
-            LOG_SENSOR("  ", "Counter - Cleaning", this->counter_cleaning);
-            LOG_SENSOR("  ", "Counter - Cappuccino Cleaning", this->counter_cappucino_cleaning);
-            LOG_SENSOR("  ", "Counter - Filters", this->counter_filter);
+            LOG_SENSOR("  ", "Counter - Cleaning", this->sensor_cleaning);
+            LOG_SENSOR("  ", "Counter - Cappuccino Cleaning", this->sensor_cappucino_cleaning);
+            LOG_SENSOR("  ", "Counter - Filters", this->sensor_filter);
 
             LOG_SENSOR("  ", "Status - Power", this->status_power);
             LOG_SENSOR("  ", "Status - Rinsing", this->status_rinsing);
