@@ -11,6 +11,8 @@ namespace esphome
   namespace jura
   {
 
+    static const char *const TAG = "jura";
+
     enum JuraReadStates
     {
       COMMAND = 0,
@@ -100,7 +102,7 @@ namespace esphome
 
     void JuraComponent::dump_config()
     {
-      ESP_LOGCONFIG("Jura", "Jura Component:");
+      ESP_LOGCONFIG(TAG, "Jura Component:");
       LOG_SENSOR("  ", "Counter - Espresso", this->sensor_espresso);
       LOG_SENSOR("  ", "Counter - Espressi", this->sensor_espressi);
       LOG_SENSOR("  ", "Counter - Ristretto", this->sensor_ristretto);
