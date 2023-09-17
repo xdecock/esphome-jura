@@ -51,7 +51,7 @@ namespace esphome
         void parse_data_();
         void send_command_(uint8_t parseMode, std::string command);
         uint16_t get_16bit_uint(uint8_t position);
-        optional<bool> check_response_();
+        bool check_response_();
 
         uint8_t data_[256];
         uint8_t data_index_{0};
