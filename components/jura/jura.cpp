@@ -1,5 +1,4 @@
 #include "jura.h"
-#include "esphome/core/log.h"
 
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 #define bitSet(value, bit) ((value) |= (1UL << (bit)))
@@ -80,10 +79,10 @@ namespace esphome
     {
       int s = 0;
       uint8_t inbyte = 0;
-      this->decoded_index = 0;
+      this->decoded_index_ = 0;
       for (int i = 0; i < this->data_index_ - 2; i++) // Read the reply skip the termination
       {
-        uint8_t rawbyte = $this->data_[i];
+        uint8_t rawbyte = this->data_[i];
         bitWrite(inbyte, s + 0, bitRead(rawbyte, 2));
         bitWrite(inbyte, s + 1, bitRead(rawbyte, 5));
         if ((s += 2) >= 8)
@@ -96,7 +95,7 @@ namespace esphome
 
     uint16_t JuraComponent::get_16bit_uint(uint8_t position)
     {
-      std::string decoded_string = reinterpret_cast<char *> (this->decoded_data_);
+      std::string decoded_string = reinterpret_cast<char *>(this->decoded_data_);
       return strtol(decoded_string.substr(position, position + 4).c_str(), NULL, 16);
     }
 
@@ -151,6 +150,7 @@ namespace esphome
 
     void JuraComponent::parse_data_()
     {
+      this->decode_response();
       switch (this->parse_mode)
       {
       case COMMAND:
@@ -199,16 +199,16 @@ namespace esphome
 
     void JuraComponent::setup()
     {
-      this->set_update_interval(60000); // 600000 = 10 minutes // Now 60 seconds
-      this->register_service(&JuraComponent::on_turnoff, "turnoff");
-      this->register_service(&JuraComponent::on_press_ristreto, "press_ristreto");
-      this->register_service(&JuraComponent::on_press_espresso, "press_espresso");
-      this->register_service(&JuraComponent::on_press_coffee, "press_coffee");
-      this->register_service(&JuraComponent::on_press_cappuccino, "press_cappuccino");
-      this->register_service(&JuraComponent::on_press_latte, "press_latte");
-      this->register_service(&JuraComponent::on_press_hotwater, "press_hotwater");
-      this->register_service(&JuraComponent::on_press_milk, "press_milk");
-      this->register_service(&JuraComponent::on_press_flush, "press_flush");
+      this->set_update_interval(15000);
+      register_service(&JuraComponent::on_turnoff, "turnoff");
+      register_service(&JuraComponent::on_press_ristreto, "press_ristreto");
+      register_service(&JuraComponent::on_press_espresso, "press_espresso");
+      register_service(&JuraComponent::on_press_coffee, "press_coffee");
+      register_service(&JuraComponent::on_press_cappuccino, "press_cappuccino");
+      register_service(&JuraComponent::on_press_latte, "press_latte");
+      register_service(&JuraComponent::on_press_hotwater, "press_hotwater");
+      register_service(&JuraComponent::on_press_milk, "press_milk");
+      register_service(&JuraComponent::on_press_flush, "press_flush");
     }
 
     void JuraComponent::update()

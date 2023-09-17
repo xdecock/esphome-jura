@@ -1,6 +1,7 @@
 #pragma once
-
+#include "esphome.h"
 #include "esphome/core/component.h"
+#include "esphome/core/log.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
 
@@ -9,13 +10,14 @@ namespace esphome
   namespace jura
   {
 
-    class JuraComponent : public PollingComponent, public uart::UARTDevice, public Component, public CustomAPIDevice {
+    class JuraComponent : public PollingComponent, public uart::UARTDevice, public api::CustomAPIDevice {
       public:
         JuraComponent() = default;
         void loop() override;
         float get_setup_priority() const override;
         void dump_config() override;
         void setup() override;
+        void update() override;
 
         void set_ristretto_sensor(sensor::Sensor *ristretto_sensor);
         void set_ristretti_sensor(sensor::Sensor *ristretti_sensor);
