@@ -169,18 +169,51 @@ namespace esphome
         counter_latte_machiato = this->get_16bit_uint(23);
         counter_powder_coffee = this->get_16bit_uint(27);
         counter_cleaning = this->get_16bit_uint(39);
+        if (sensor_espresso != nullptr) {
+          sensor_espresso->publish_state(counter_espresso);
+        }
+        if (sensor_ristretto != nullptr) {
+          sensor_ristretto->publish_state(counter_ristretto);
+        }
+        if (sensor_big_coffee != nullptr) {
+          sensor_big_coffee->publish_state(counter_big_coffee);
+        }
+        if (sensor_cappuccino != nullptr) {
+          sensor_cappuccino->publish_state(counter_cappuccino);
+        }
+        if (sensor_latte_machiato != nullptr) {
+          sensor_latte_machiato->publish_state(counter_latte_machiato);
+        }
+        if (sensor_powder_coffee != nullptr) {
+          sensor_powder_coffee->publish_state(counter_powder_coffee);
+        }
+        if (sensor_cleaning != nullptr) {
+          sensor_cleaning->publish_state(counter_cleaning);
+        }
         return;
 
       case READ_EEPROM_0010:
         uint16_t counter_milk, counter_water;
         counter_milk = this->get_16bit_uint(15);
         counter_water = this->get_16bit_uint(19);
+        if (sensor_milk != nullptr) {
+          sensor_milk->publish_state(counter_milk);
+        }
+        if (sensor_water != nullptr) {
+          sensor_water->publish_state(counter_water);
+        }
         return;
 
       case READ_EEPROM_0020:
         uint16_t counter_cappuccino_cleaning, counter_filters;
         counter_cappuccino_cleaning = this->get_16bit_uint(7);
         counter_filters = this->get_16bit_uint(11);
+        if (sensor_cappuccino_cleaning != nullptr) {
+          sensor_cappuccino_cleaning->publish_state(counter_cappuccino_cleaning);
+        }
+        if (sensor_filters != nullptr) {
+          sensor_filters->publish_state(counter_filters);
+        }
         return;
 
       case READ_EEPROM_00E0:
@@ -188,6 +221,15 @@ namespace esphome
         counter_double_espressi = this->get_16bit_uint(3);
         counter_double_ristretti = this->get_16bit_uint(7);
         counter_double_big_coffee = this->get_16bit_uint(11);
+        if (sensor_double_espressi != nullptr) {
+          sensor_double_espressi->publish_state(counter_double_espressi);
+        }
+        if (sensor_cappuccino_cleaning != nullptr) {
+          sensor_double_ristretti->publish_state(counter_double_ristretti);
+        }
+        if (sensor_double_big_coffee != nullptr) {
+          sensor_double_big_coffee->publish_state(counter_double_big_coffee);
+        }
         return;
 
       case READ_STATE:
@@ -213,6 +255,26 @@ namespace esphome
 
     void JuraComponent::update()
     {
+      switch (this->parse_mode) {
+        case READ_EEPROM_0000:
+          this->send_command_(READ_EEPROM_0010, "RT:0010");
+          return;
+        case READ_EEPROM_0010:
+          this->send_command_(READ_EEPROM_0020, "RT:0020");
+          return;
+        case READ_EEPROM_0020:
+          this->send_command_(READ_EEPROM_00E0, "RT:00E0");
+          return;
+        case READ_EEPROM_00E0:
+          this->send_command_(READ_STATE, "IC:");
+          return;
+        case READ_STATE:
+          this->send_command_(READ_TYPE, "TY:");
+          return;
+        default:
+          this->send_command_(READ_EEPROM_0000, "RT:0000");
+          return;
+      }
     }
 
     void JuraComponent::on_turnoff()
